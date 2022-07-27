@@ -7,7 +7,8 @@ import styles from "../styles/Home.module.css";
 import { collection, getFirestore } from "firebase/firestore";
 import { auth } from "../firebase/clientApp";
 import { onAuthStateChanged } from "firebase/auth";
-import { User } from "../types/user.type";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { selectUserDetails, setUserDetails } from "../redux/slices/userSlice";
 
 const Home: NextPage = () => {
   // const [user, loading, error] = useAuthState(auth);
@@ -20,6 +21,10 @@ const Home: NextPage = () => {
 
   const [loggedUser, setLoggedUser] = useState<any>(null);
 
+  const userDetails = useAppSelector(selectUserDetails);
+
+  const dispatch = useAppDispatch();
+
   useEffect(() => {
     if (users) {
       console.log("users", users[0]);
@@ -31,12 +36,16 @@ const Home: NextPage = () => {
   }, [user]);
 
   useEffect(() => {
-    console.log("loggedUser", loggedUser);
-  }, [loggedUser]);
+    console.log("userDetails", userDetails);
+  }, [userDetails]);
 
   onAuthStateChanged(auth, (currentUser) => {
-    if (currentUser) {
-      setLoggedUser(currentUser);
+    if (currentUser && !userDetails) {
+      dispatch(
+        setUserDetails({
+          username: currentUser.displayName || "",
+        })
+      );
     }
   });
 
@@ -49,7 +58,7 @@ const Home: NextPage = () => {
       </Head>
 
       <main className={styles.main}>
-        {!loggedUser && <button onClick={() => signInWithGithub()}>Hello!</button>}
+        {!userDetails && <button onClick={() => signInWithGithub()}>Hello!</button>}
       </main>
 
       <footer className={styles.footer}></footer>
