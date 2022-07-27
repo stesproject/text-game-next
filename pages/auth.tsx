@@ -1,6 +1,5 @@
 import React from "react";
-import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
-import { getAuth, GithubAuthProvider } from "firebase/auth";
+import { GithubAuthProvider } from "firebase/auth";
 
 // Configure FirebaseUI.
 const uiConfig = {
@@ -21,9 +20,8 @@ function SignInScreen() {
         justifyContent: "center",
       }}
     >
-      <h1>Pineapple Login</h1>
+      <h1>Text Game Login</h1>
       <p>Please sign-in:</p>
-      <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={getAuth()} />
     </div>
   );
 }

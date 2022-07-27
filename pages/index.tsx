@@ -1,9 +1,45 @@
+import { useEffect, useState } from "react";
 import type { NextPage } from "next";
 import Head from "next/head";
-import Image from "next/image";
+import { useSignInWithGithub } from "react-firebase-hooks/auth";
+import { useCollectionData } from "react-firebase-hooks/firestore";
 import styles from "../styles/Home.module.css";
+import { collection, getFirestore } from "firebase/firestore";
+import { auth } from "../firebase/clientApp";
+import { onAuthStateChanged } from "firebase/auth";
+import { User } from "../types/user.type";
 
 const Home: NextPage = () => {
+  // const [user, loading, error] = useAuthState(auth);
+  const [signInWithGithub, user, loadingUser, errorUser] = useSignInWithGithub(auth);
+
+  const [users, usersLoading, usersError] = useCollectionData(
+    collection(getFirestore(), "users"),
+    {}
+  );
+
+  const [loggedUser, setLoggedUser] = useState<any>(null);
+
+  useEffect(() => {
+    if (users) {
+      console.log("users", users[0]);
+    }
+  }, [users]);
+
+  useEffect(() => {
+    console.log("user", user);
+  }, [user]);
+
+  useEffect(() => {
+    console.log("loggedUser", loggedUser);
+  }, [loggedUser]);
+
+  onAuthStateChanged(auth, (currentUser) => {
+    if (currentUser) {
+      setLoggedUser(currentUser);
+    }
+  });
+
   return (
     <div className={styles.container}>
       <Head>
@@ -13,7 +49,7 @@ const Home: NextPage = () => {
       </Head>
 
       <main className={styles.main}>
-        <div>Hello!</div>
+        {!loggedUser && <button onClick={() => signInWithGithub()}>Hello!</button>}
       </main>
 
       <footer className={styles.footer}></footer>
